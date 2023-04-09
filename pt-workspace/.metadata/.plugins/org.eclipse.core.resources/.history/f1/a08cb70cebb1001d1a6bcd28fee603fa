@@ -1,0 +1,23 @@
+
+public class BankApplication {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+			printMenu();
+	}
+	
+	private static void printMenu() {
+		System.out.print("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\r\n"
+				+ "1. Hitta konto utifrån innehavare\r\n"
+				+ "2. Sök kontoinnehavare utifrån (del av) namn\r\n"
+				+ "3. Sätt in\r\n"
+				+ "4. Ta ut\r\n"
+				+ "5. Överföring\r\n"
+				+ "6. Skapa konto\r\n"
+				+ "7. Ta bort konto\r\n"
+				+ "8. Skriv ut konton\r\n"
+				+ "9. Avsluta"
+				+ "val: ");
+	}
+
+}

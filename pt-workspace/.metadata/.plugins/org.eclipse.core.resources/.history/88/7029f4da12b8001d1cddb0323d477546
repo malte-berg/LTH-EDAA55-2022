@@ -1,0 +1,168 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class BankApplication {
+
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		sc.useDelimiter(System.lineSeparator()); 
+		Bank bank = new Bank();
+		
+		int choice = 0;
+		
+		while (choice != 9) {
+			/** Skriv ut menyn */
+			printMenu();
+			choice = 0;
+			try {
+				choice = Integer.valueOf(sc.next());
+			} catch (java.lang.NumberFormatException e) { // Om inmatade värdet inte är en int
+				System.out.println("Skriv en siffra mellan 1-9");
+				continue;
+			}
+			switch(choice) {
+			case 1: 
+				/** ----------- Inmatning ----------- */
+				System.out.print("ID: ");
+				int idForAccounts = sc.nextInt();
+				/** --------------------------------- */
+				
+				for (BankAccount b: bank.findAccountsForHolder(idForAccounts)) {
+					System.out.println(b);
+				}
+				break;
+			case 2:
+				/** ----------- Inmatning ----------- */
+				System.out.print("(Del av) namn: ");
+				String namePart = sc.next();
+				/** --------------------------------- */
+				
+				ArrayList<Customer> found = bank.findByPartofName(namePart);
+				if(found.size() == 0) {
+					System.out.println("Inga konton kunde hittas!");
+					break;
+				}
+				for(Customer c: found) {
+					System.out.println(c);
+				}
+				break;
+			case 3:
+				/** ----------- Inmatning ----------- */
+				System.out.print("Konto: ");
+				int depositAccountNr = sc.nextInt();
+				System.out.print("Belopp: ");
+				double depositAmount = sc.nextDouble();
+				/** --------------------------------- */
+				
+				BankAccount depositAccount = bank.findByNumber(depositAccountNr);
+				if (depositAccount != null) { // Om kontot kunde hittas
+					depositAccount.deposit(depositAmount);
+					System.out.println(depositAccount);
+				} else { // Om kontot inte kunde hittas
+					System.out.println("Kontot kunde inte hittas! "
+							+ "Kontrollera ditt inmatade kontonummer.");
+				}
+				break;
+			case 4:
+				/** ----------- Inmatning ----------- */
+				System.out.print("Från konto: ");
+				int withdrawAccountNr = sc.nextInt();
+				System.out.print("Belopp: ");
+				double withdrawAmount = sc.nextDouble();
+				/** --------------------------------- */
+				
+				BankAccount withdrawAccount = bank.findByNumber(withdrawAccountNr);
+				if (withdrawAccount == null) { // Om kontot inte kunde hittas
+					System.out.println("Kontot kunde inte hittas! "
+							+ "Kontrollera ditt inmatade kontonummer.");
+				} else if (withdrawAmount > withdrawAccount.getAmount()) {
+					System.out.println("Uttaget misslyckades, endast "
+							+ withdrawAccount.getAmount() + " på kontot!");
+				} else {
+					withdrawAccount.withdraw(withdrawAmount);
+					System.out.println(withdrawAccount);
+				}
+				break;
+			case 5:
+				/** ----------- Inmatning ----------- */
+				System.out.print("Från konto: ");
+				int fromAccountNr = sc.nextInt();
+				System.out.print("Till konto: ");
+				int toAccountNr = sc.nextInt();
+				System.out.print("Belopp: ");
+				double transferAmount = sc.nextDouble();
+				/** --------------------------------- */
+				
+				BankAccount fromAccount = bank.findByNumber(fromAccountNr);
+				BankAccount toAccount = bank.findByNumber(toAccountNr);
+				if (fromAccount == null) { // Om från-kontot inte kunde hittas
+					System.out.println("Från-kontot kunde inte hittas! "
+							+ "Kontrollera ditt inmatade kontonummer.");
+				} else if (toAccount == null) {
+					System.out.println("Mottagarkontot kunde inte hittas! "
+							+ "Kontrollera ditt inmatade kontonummer.");
+				} else if (transferAmount > fromAccount.getAmount()) {
+					System.out.println("Överföringen misslyckades, endast "
+							+ fromAccount.getAmount() + " på från-kontot!");
+				} else {
+					fromAccount.withdraw(transferAmount);
+					toAccount.deposit(transferAmount);
+					
+					System.out.println(fromAccount);
+					System.out.println(toAccount);
+				}
+				break;
+			case 6:
+				/** ----------- Inmatning ----------- */
+				System.out.print("Namn: ");
+				String name = sc.next();
+				System.out.print("ID: ");
+				long id = sc.nextLong();
+				/** --------------------------------- */
+				
+				int accountNumber = bank.addAccount(name, id);
+				System.out.println("konto skapat: " + accountNumber);
+				
+				break;
+			case 7:
+				/** ----------- Inmatning ----------- */
+				System.out.print("Konto: ");
+				int removeAccountNr = sc.nextInt();
+				/** --------------------------------- */
+				
+				if(!bank.removeAccount(removeAccountNr)) { // Försök radera konto
+					System.out.println("Kontot kunde inte hittas! " // Om removeAccount() returnerar false
+							+ "Kontrollera ditt inmatade kontonummer.");
+				}
+				
+				break;
+			case 8:
+				for (BankAccount b: bank.getAllAccounts()) {
+					System.out.println(b);
+				}
+				break;
+			case 9: // Tom då while-loopen kör tills choice == 9
+				break;
+			default: 
+				System.out.println("Felinmatning");
+			}
+		}
+		
+	}
+	
+	private static void printMenu() {
+		System.out.print("- - - - - - - - - - - - - - - - - - - - - - - - "
+				+ "- - - - - - - - - - - - - - - - - - - -\r\n"
+				+ "1. Hitta konto utifrån innehavare\r\n"
+				+ "2. Sök kontoinnehavare utifrån (del av) namn\r\n"
+				+ "3. Sätt in\r\n"
+				+ "4. Ta ut\r\n"
+				+ "5. Överföring\r\n"
+				+ "6. Skapa konto\r\n"
+				+ "7. Ta bort konto\r\n"
+				+ "8. Skriv ut konton\r\n"
+				+ "9. Avsluta\r\n"
+				+ "Val: ");
+	}
+
+}

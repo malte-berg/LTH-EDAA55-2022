@@ -1,0 +1,124 @@
+import java.util.ArrayList;
+
+public class Bank {
+	
+	private ArrayList<BankAccount> allAccounts;
+	
+	/** Skapar en ny bank utan konton. */
+	public Bank() {
+		allAccounts = new ArrayList<>();
+	}
+	
+	/**
+	* Öppna ett nytt konto i banken. Om det redan finns en kontoinnehavare
+	* med de givna uppgifterna ska inte en ny Customer skapas, utan istället
+	* den befintliga användas. Det nya kontonumret returneras.
+	*/
+	public int addAccount(String holderName, long idNr) {
+		BankAccount newAccount = null;
+		for (BankAccount b: allAccounts) { // Loopa igenom alla konton
+			if (b.getHolder().getName().toLowerCase().equals(holderName.toLowerCase()) &&
+					b.getHolder().getIdNr() == idNr) { 			// Om namnet och idnr passar en redan existerande Customer
+				newAccount = new BankAccount(b.getHolder());	// Skapa ett nytt konto med den Customer som ägare
+				allAccounts.add(newAccount);					// Lägg till kontot i listan
+				return newAccount.getAccountNumber();			// Returnera det nya kontonumret
+			}
+		}														// Om namnet och idnr inte passade på en redan existerande Customer
+		newAccount = new BankAccount(holderName, idNr);			// Skapa ett nytt konto och en ny Customer
+		allAccounts.add(newAccount);							// Lägg till kontot i listan
+		return newAccount.getAccountNumber();					// Returnera det nya kontonumret
+	}
+	/**
+	* Returnerar den kontoinnehavaren som har det givna id-numret,
+	* eller null om ingen sådan finns.
+	*/
+	public Customer findHolder(long idNr) {
+		for(BankAccount b: allAccounts) {								// Loopa igenom alla konton
+			if (b.getHolder().getIdNr() == idNr) return b.getHolder();	// Om idnr passar på ett konto, returnera matchande Customer
+		}
+		return null;													// Annars returnera null
+	}
+	/**
+	* Tar bort konto med nummer 'number' från banken. Returnerar true om
+	* kontot fanns (och kunde tas bort), annars false.
+	*/
+	public boolean removeAccount(int number) {
+		for (BankAccount b: allAccounts) {				// Loopa igenom alla konton
+			if (b.getAccountNumber() == number) {		// Om ett konto med kontonummer number finns
+				allAccounts.remove(b);					// Ta bort kontot ur listan
+				return true;							// Returnera true
+			}
+		}
+		return false;									// Annars returneras false
+	}
+	/**
+	* Returnerar en lista innehållande samtliga bankkonton i banken.
+	* Listan är sorterad på kontoinnehavarnas namn.
+	*/
+	public ArrayList<BankAccount> getAllAccounts() {
+		ArrayList<BankAccount> sortedAccounts = new ArrayList<>();		// Skapa en ny lista för att inte ändra på originallistan
+		
+		for (BankAccount b: allAccounts) sortedAccounts.add(b);	// Kopiera över listan
+		
+		/** Jättefin lambda-sort
+		sortedAccounts.sort((o1, o2)									// Sortera med hjälp av en lambda-metod
+				-> o1.getHolder().getName().toLowerCase().compareTo(	// Jämför strängarna
+						o2.getHolder().getName().toLowerCase()));		// Listan sorteras 
+		*/
+		
+		/** Sort utan Collections.sort */
+		int n = sortedAccounts.size();
+        for (int i = 0; i < n-1; i++) {
+            for (int j = 0; j < n-i-1; j++) {
+                if (sortedAccounts.get(j).getHolder().getName()
+                		.compareTo(sortedAccounts.get(j+1).getHolder().getName()) > 0) {
+                    BankAccount temp = sortedAccounts.get(j);
+                    sortedAccounts.set(j, sortedAccounts.get(j+1));
+                    sortedAccounts.set(j+1, temp);
+                }
+            }
+        }
+		return sortedAccounts;											// Returnera den sorterade listan
+	}
+	/**
+	* Söker upp och returnerar bankkontot med kontonummer 'accountNumber'.
+	* Returnerar null om inget sådant konto finns.
+	*/
+	public BankAccount findByNumber(int accountNumber) {
+		for (BankAccount b: allAccounts) {							// Loopa igenom alla konton
+			if (b.getAccountNumber() == accountNumber) return b;	// Om ett konto med kontonummer accountNumber, returnera kontot
+		}
+		return null;												// Annars returnera null
+	}
+	/**
+	* Söker upp alla bankkonton som innehas av kunden med id-nummer 'idNr'.
+	* Kontona returneras i en lista. Kunderna antas ha unika id-nummer.
+	*/
+	public ArrayList<BankAccount> findAccountsForHolder(long idNr) {
+		ArrayList<BankAccount> holderAccounts = new ArrayList<>();		// Skapa ny lista för konton till Customer med id idNr
+		for (BankAccount b: allAccounts) {								// Loopa igenom alla konton
+			if (b.getHolder().getIdNr() == idNr) holderAccounts.add(b);	// Om idNr matchar kontot, lägg till det i listan
+		}
+		return holderAccounts;											// Returnera listan med konton Customer äger
+	}
+	/**
+	* Söker upp kunder utifrån en sökning på namn eller del av namn. Alla
+	* personer vars namn innehåller strängen 'namePart' inkluderas i
+	* resultatet, som returneras som en lista. Samma person kan förekomma
+	* flera gånger i resultatet. Sökningen är "case insensitive", det vill
+	* säga gör ingen skillnad på stora och små bokstäver.
+	*/
+	public ArrayList<Customer> findByPartofName(String namePart) {
+		ArrayList<Customer> foundCustomers = new ArrayList<>();	// Skapa en ny lista med Customers
+		
+		for (BankAccount b: allAccounts) {						// Loopa igenom alla konton
+			if (b.getHolder().getName().toLowerCase()
+					.contains(namePart.toLowerCase())) {		// Om ett konto innehåller namePart
+				if (!foundCustomers.contains(b.getHolder())) {	// Om kontoägaren redan finns i listan så läggs inte en dublett till
+					foundCustomers.add(b.getHolder());			// Men om kontoägaren inte finns läggs den till i listan
+				}
+			}
+		}
+		return foundCustomers;									// Returnera listan med Customers
+	}
+}

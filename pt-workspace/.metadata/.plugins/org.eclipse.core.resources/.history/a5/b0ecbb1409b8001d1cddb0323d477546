@@ -1,0 +1,78 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class BankApplication {
+
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		sc.useDelimiter(System.lineSeparator()); 
+		Bank bank = new Bank();
+		
+		int choice = 0;
+		
+		while (choice != 9) {
+			printMenu();
+			choice = sc.nextInt();
+			switch(choice) {
+			case 1: 
+				
+				break;
+			case 2:
+				System.out.print("namn: ");
+				String namePart = sc.next();
+				ArrayList<Customer> found = bank.findByPartofName(namePart);
+				if(found.size() == 0) {
+					System.out.println("Inga konton kunde hittas!");
+					break;
+				}
+				for(Customer c: found) {
+					System.out.println(c);
+				}
+				break;
+			case 3:
+				System.out.print("konto: ");
+				double depositAccount = sc.nextDouble();
+				System.out.print(");
+				break;
+			case 4:
+				
+				break;
+			case 5:
+	
+				break;
+			case 6:
+				System.out.print("namn: ");
+				String name = sc.next();
+				System.out.print("id: ");
+				long id = sc.nextLong();
+				int accountNumber = bank.addAccount(name, id);
+				System.out.println("konto skapat:" + accountNumber);
+				break;
+			case 7:
+				
+				break;
+			case 8:
+	
+				break;
+			case 9:
+				break;
+			}
+		}
+		
+	}
+	
+	private static void printMenu() {
+		System.out.print("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\r\n"
+				+ "1. Hitta konto utifrån innehavare\r\n"
+				+ "2. Sök kontoinnehavare utifrån (del av) namn\r\n"
+				+ "3. Sätt in\r\n"
+				+ "4. Ta ut\r\n"
+				+ "5. Överföring\r\n"
+				+ "6. Skapa konto\r\n"
+				+ "7. Ta bort konto\r\n"
+				+ "8. Skriv ut konton\r\n"
+				+ "9. Avsluta\r\n"
+				+ "val: ");
+	}
+
+}
